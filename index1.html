@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dopamine Reset - Habit Tracker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 20px 0;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .subtitle {
+            color: #666666;
+            font-size: 18px;
+            font-weight: 400;
+            margin: 24px 0 0 0;
+            text-align: left;
+            max-width: 600px;
+            line-height: 1.4;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Habits Section */
+        .habits-section {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: inherit;
+            letter-spacing: -0.01em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #1a1a1a;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-secondary:hover {
+            background: #f8f8f8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Habits Grid */
+        .habits-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .habit-card {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .habit-card:hover {
+            border-color: rgba(255, 107, 107, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .habit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .habit-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .habit-category {
+            font-size: 12px;
+            color: #666666;
+            background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .habit-description {
+            color: #666666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .habit-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: #666666;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+        }
+
+        .habit-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            box-shadow: 0 4px 16px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffd93d, #ff9800);
+            color: white;
+            box-shadow: 0 4px 16px rgba(255, 217, 61, 0.3);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 217, 61, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-card {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            letter-spacing: -0.01em;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px 16px;
+            background: linear-gradient(135deg, #f8f9ff, #f0f8ff);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin-top: 15px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 520px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #666666;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+
+        .close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #1a1a1a;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 14px;
+            letter-spacing: -0.01em;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            background: #ffffff;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .form-select {
+            background-image: none !important;
+            background-position: right 16px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 16px;
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+            background: #ffffff;
+        }
+
+        .form-input:hover, .form-textarea:hover, .form-select:hover {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .form-select:focus {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ff6b6b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        }
+
+        .form-select option {
+            padding: 12px 16px;
+            font-size: 15px;
+            background: #ffffff;
+            color: #1a1a1a;
+            border: none;
+        }
+
+        /* Custom Select Dropdown Styling */
+        .form-select {
+            position: relative;
+        }
+
+        .form-select::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-select::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .form-select::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+            border-radius: 4px;
+        }
+
+        .form-select::-webkit-scrollbar-thumb:hover {
+            background: #ff5252;
+        }
+
+        /* Better option styling for different browsers */
+        .form-select option:checked {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .form-select option:hover {
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        /* Custom Select Dropdown */
+        .custom-select {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .custom-select select {
+            display: none;
+        }
+
+        .select-selected {
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .select-selected:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-color: #666666 transparent transparent transparent;
+            transform: translateY(-50%);
+            transition: all 0.2s ease;
+        }
+
+        .select-selected.select-arrow-active:after {
+            border-color: transparent transparent #ff6b6b transparent;
+            top: 40%;
+        }
+
+        .select-selected:hover {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .select-items {
+            position: absolute;
+            background-color: #ffffff;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .select-items div {
+            color: #1a1a1a;
+            padding: 12px 16px;
+            border: none;
+            cursor: pointer;
+            user-select: none;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .select-items div:hover, .same-as-selected {
+            background-color: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+        }
+
+        .select-items div:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .select-items div:last-child {
+            border-radius: 0 0 12px 12px;
+        }
+
+        .select-hide {
+            display: none;
+        }
+
+        .select-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .select-items::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .select-items::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+            border-radius: 3px;
+        }
+
+        /* Modal Form Actions */
+        .modal form {
+            margin-top: 8px;
+        }
+
+        .modal .btn {
+            margin-top: 8px;
+            font-size: 16px;
+            padding: 14px 24px;
+        }
+
+        /* Modal Content Spacing */
+        .modal-content > *:not(.modal-header) {
+            margin-top: 8px;
+        }
+
+        /* Confirmation Modal */
+        .confirmation-content {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .confirmation-icon {
+            font-size: 48px;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-content p {
+            font-size: 16px;
+            color: #1a1a1a;
+            line-height: 1.5;
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .confirmation-actions .btn {
+            min-width: 120px;
+            margin: 0;
+        }
+
+        /* Insights */
+        .insights-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .insight-item {
+            padding: 16px;
+            background: #f7f6f3;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            border-left: 3px solid #2e75cc;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #37352f;
+            font-size: 14px;
+        }
+
+        .insight-text {
+            font-size: 13px;
+            color: #787774;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .habit-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Streak Counter */
+        .streak-counter {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .streak-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .streak-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Authentication Styles */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #fafafa;
+        }
+
+        .auth-card {
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-subtitle {
+            color: #666;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .auth-description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .auth-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .auth-links a {
+            color: #2e75cc;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 10px;
+            transition: color 0.2s ease;
+        }
+
+        .auth-links a:hover {
+            color: #1e65bc;
+            text-decoration: underline;
+        }
+
+        /* User Info Styles */
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 14px;
+            letter-spacing: -0.01em;
+        }
+
+        .user-email {
+            color: #666666;
+            font-size: 12px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-actions .btn {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .quick-action-btn i {
+            font-size: 16px;
+        }
+
+        /* Templates Grid */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .template-card {
+            background: #f7f6f3;
+            border: 1px solid #e3e2e0;
+            border-radius: 6px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .template-card:hover {
+            border-color: #2e75cc;
+            background: #ffffff;
+        }
+
+        .template-title {
+            font-weight: 600;
+            color: #37352f;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .template-description {
+            color: #787774;
+            font-size: 13px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .template-category {
+            font-size: 11px;
+            color: #787774;
+            background: #ffffff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        /* Calendar Styles */
+        .calendar-container {
+            max-width: 100%;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e3e2e0;
+        }
+
+        .calendar-header h3 {
+            margin: 0;
+            color: #37352f;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e3e2e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .calendar-day {
+            background: #ffffff;
+            padding: 12px 8px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        .calendar-day-header {
+            background: #f7f6f3;
+            font-weight: 600;
+            color: #37352f;
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        .calendar-day-number {
+            font-size: 14px;
+            font-weight: 500;
+            color: #37352f;
+            margin-bottom: 4px;
+        }
+
+        .calendar-day.other-month {
+            background: #f7f6f3;
+            color: #787774;
+        }
+
+        .calendar-day.today {
+            background: #2e75cc;
+            color: white;
+        }
+
+        .calendar-habits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-top: 4px;
+        }
+
+        .calendar-habit-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4caf50;
+        }
+
+        .calendar-habit-dot.missed {
+            background: #f44336;
+        }
+
+        .calendar-habit-dot.partial {
+            background: #ff9800;
+        }
+
+        /* Achievements Styles */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .achievement-card {
+            background: #f7f6f3;
+            border: 1px solid #e3e2e0;
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .achievement-card.unlocked {
+            background: #ffffff;
+            border-color: #2e75cc;
+        }
+
+        .achievement-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .achievement-card.unlocked .achievement-icon {
+            color: #2e75cc;
+        }
+
+        .achievement-card:not(.unlocked) .achievement-icon {
+            color: #787774;
+            opacity: 0.5;
+        }
+
+        .achievement-title {
+            font-weight: 600;
+            color: #37352f;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .achievement-description {
+            color: #787774;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+
+        /* Export Options */
+        .export-options {
+            display: grid;
+            gap: 20px;
+        }
+
+        .export-option {
+            background: #f7f6f3;
+            border: 1px solid #e3e2e0;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .export-option h3 {
+            margin: 0 0 8px 0;
+            color: #37352f;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .export-option p {
+            margin: 0 0 16px 0;
+            color: #787774;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            background: #2f3437;
+            color: #e9e9e7;
+        }
+
+        .dark-mode .header {
+            background: #2f3437;
+            border-bottom-color: #4a4a4a;
+        }
+
+        .dark-mode .logo {
+            color: #e9e9e7;
+        }
+
+        .dark-mode .subtitle {
+            color: #9b9a97;
+        }
+
+        .dark-mode .sidebar-card,
+        .dark-mode .habit-card,
+        .dark-mode .auth-card {
+            background: #37352f;
+            border-color: #4a4a4a;
+        }
+
+        .dark-mode .sidebar-title,
+        .dark-mode .habit-title,
+        .dark-mode .section-title {
+            color: #e9e9e7;
+        }
+
+        .dark-mode .habit-description,
+        .dark-mode .progress-text,
+        .dark-mode .stat-label {
+            color: #9b9a97;
+        }
+
+        .dark-mode .stat-item,
+        .dark-mode .habit-category,
+        .dark-mode .streak-counter {
+            background: #2f3437;
+            border-color: #4a4a4a;
+        }
+
+        .dark-mode .progress-bar {
+            background: #2f3437;
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Container -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>Dopamine Reset</span>
+                </div>
+                <p class="auth-subtitle">Sign in to start building better habits</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <h2>Welcome Back</h2>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" name="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" name="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                <div class="auth-links">
+                    <a href="#" id="switchToForgotPassword">Forgot Password?</a>
+                    <a href="#" id="switchToSignup">Don't have an account? Sign up</a>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form" style="display: none;">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" name="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" name="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" name="signupPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-input" name="signupConfirmPassword" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                <div class="auth-links">
+                    <a href="#" id="switchToLogin">Already have an account? Sign in</a>
+                </div>
+            </form>
+
+            <!-- Forgot Password Form -->
+            <form id="forgotPasswordForm" class="auth-form" style="display: none;">
+                <h2>Reset Password</h2>
+                <p class="auth-description">Enter your email address and we'll send you a link to reset your password.</p>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" name="forgotPasswordEmail" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Send Reset Link</button>
+                <div class="auth-links">
+                    <a href="#" id="switchToLogin">Back to Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="mainApp" class="container" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">
+                        <div class="logo-icon">DR</div>
+                        <span>Dopamine Reset</span>
+                    </div>
+                    <p class="subtitle">Track your habits, build better routines, and understand what works for you</p>
+                </div>
+                <div id="userInfo" class="user-info">
+                    <!-- User info will be populated here -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Habits Section -->
+            <div class="habits-section">
+                <div class="section-header">
+                    <h2 class="section-title">Your Habits</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="openModal('habit-templates')">
+                            <i class="fas fa-lightbulb"></i>
+                            Templates
+                        </button>
+                        <button class="btn btn-primary" onclick="openModal('add-habit')">
+                            <i class="fas fa-plus"></i>
+                            Add Habit
+                        </button>
+                    </div>
+                </div>
+
+                <div class="habits-grid" id="habitsGrid">
+                    <!-- Habits will be dynamically generated here -->
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Streak Counter -->
+                <div class="sidebar-card">
+                    <div class="streak-counter">
+                        <div class="streak-number" id="currentStreak">0</div>
+                        <div class="streak-label">Day Streak</div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">This Week</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalHabits">0</div>
+                            <div class="stat-label">Total Habits</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="completedToday">0</div>
+                            <div class="stat-label">Completed Today</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="successRate">0%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="bestStreak">0</div>
+                            <div class="stat-label">Best Streak</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Chart -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Weekly Progress</h3>
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">Quick Actions</h3>
+                    <div class="quick-actions">
+                        <button class="btn btn-secondary quick-action-btn" onclick="openModal('calendar')">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Calendar View</span>
+                        </button>
+                        <button class="btn btn-secondary quick-action-btn" onclick="openModal('achievements')">
+                            <i class="fas fa-trophy"></i>
+                            <span>Achievements</span>
+                        </button>
+                        <button class="btn btn-secondary quick-action-btn" onclick="openModal('export')">
+                            <i class="fas fa-download"></i>
+                            <span>Export Data</span>
+                        </button>
+                        <button class="btn btn-secondary quick-action-btn" onclick="dopamineReset.toggleDarkMode()">
+                            <i class="fas fa-moon"></i>
+                            <span>Dark Mode</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Insights -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">AI Insights</h3>
+                    <ul class="insights-list" id="insightsList">
+                        <!-- Insights will be dynamically generated -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div id="addHabitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Habit</h2>
+                <button class="close" onclick="closeModal('add-habit')">&times;</button>
+            </div>
+            <form id="addHabitForm">
+                <div class="form-group">
+                    <label class="form-label">Habit Name</label>
+                    <input type="text" class="form-input" id="habitName" required placeholder="e.g., Morning Exercise">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <div class="custom-select">
+                        <select class="form-select" id="habitCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="health">Health & Fitness</option>
+                            <option value="productivity">Productivity</option>
+                            <option value="learning">Learning</option>
+                            <option value="mindfulness">Mindfulness</option>
+                            <option value="social">Social</option>
+                            <option value="finance">Finance</option>
+                            <option value="creativity">Creativity</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="habitDescription" placeholder="Describe your habit and why it's important to you..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Frequency</label>
+                    <div class="custom-select">
+                        <select class="form-select" id="habitFrequency" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Habit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Habit Modal -->
+    <div id="editHabitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Habit</h2>
+                <button class="close" onclick="closeModal('edit-habit')">&times;</button>
+            </div>
+            <form id="editHabitForm">
+                <input type="hidden" id="editHabitId">
+                <div class="form-group">
+                    <label class="form-label">Habit Name</label>
+                    <input type="text" class="form-input" id="editHabitName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <div class="custom-select">
+                        <select class="form-select" id="editHabitCategory" required>
+                            <option value="health">Health & Fitness</option>
+                            <option value="productivity">Productivity</option>
+                            <option value="learning">Learning</option>
+                            <option value="mindfulness">Mindfulness</option>
+                            <option value="social">Social</option>
+                            <option value="finance">Finance</option>
+                            <option value="creativity">Creativity</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="editHabitDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Frequency</label>
+                    <div class="custom-select">
+                        <select class="form-select" id="editHabitFrequency" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Habit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log Entry Modal -->
+    <div id="logEntryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Log Habit Progress</h2>
+                <button class="close" onclick="closeModal('log-entry')">&times;</button>
+            </div>
+            <form id="logEntryForm">
+                <input type="hidden" id="logHabitId">
+                <div class="form-group">
+                    <label class="form-label">How did it go?</label>
+                    <div class="custom-select">
+                        <select class="form-select" id="logStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="completed">✅ Completed</option>
+                            <option value="partial">🔄 Partially Done</option>
+                            <option value="missed">❌ Missed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes (Optional)</label>
+                    <textarea class="form-textarea" id="logNotes" placeholder="How did you feel? What worked? What didn't?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Difficulty Level</label>
+                    <div class="custom-select">
+                        <select class="form-select" id="logDifficulty">
+                            <option value="1">Very Easy</option>
+                            <option value="2">Easy</option>
+                            <option value="3" selected>Medium</option>
+                            <option value="4">Hard</option>
+                            <option value="5">Very Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Log Entry</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Habit Templates Modal -->
+    <div id="habitTemplatesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Habit Templates</h2>
+                <button class="close" onclick="closeModal('habit-templates')">&times;</button>
+            </div>
+            <div class="templates-grid" id="templatesGrid">
+                <!-- Templates will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar View Modal -->
+    <div id="calendarModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Habit Calendar</h2>
+                <button class="close" onclick="closeModal('calendar')">&times;</button>
+            </div>
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="btn btn-secondary" onclick="dopamineReset.changeMonth(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 id="calendarMonth">January 2024</h3>
+                    <button class="btn btn-secondary" onclick="dopamineReset.changeMonth(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Modal -->
+    <div id="achievementsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Achievements</h2>
+                <button class="close" onclick="closeModal('achievements')">&times;</button>
+            </div>
+            <div class="achievements-grid" id="achievementsGrid">
+                <!-- Achievements will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Data Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Export Data</h2>
+                <button class="close" onclick="closeModal('export')">&times;</button>
+            </div>
+            <div class="export-options">
+                <div class="export-option">
+                    <h3>CSV Export</h3>
+                    <p>Export your habit data as a CSV file for analysis in spreadsheet applications.</p>
+                    <button class="btn btn-primary" onclick="dopamineReset.exportData('csv')">
+                        <i class="fas fa-file-csv"></i>
+                        Export CSV
+                    </button>
+                </div>
+                <div class="export-option">
+                    <h3>PDF Report</h3>
+                    <p>Generate a comprehensive PDF report with charts and insights.</p>
+                    <button class="btn btn-primary" onclick="dopamineReset.exportData('pdf')">
+                        <i class="fas fa-file-pdf"></i>
+                        Export PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Settings Modal -->
+    <div id="userSettingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">User Settings</h2>
+                <button class="close" onclick="authSystem.closeUserSettings()">&times;</button>
+            </div>
+            <form id="userSettingsForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="settingsUserName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="settingsUserEmail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Theme</label>
+                    <div class="custom-select">
+                        <select class="form-select" id="settingsTheme">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="settingsNotifications" style="margin-right: 8px;">
+                        Enable Notifications
+                    </label>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="authSystem.saveUserSettings()" style="width: 100%;">Save Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirm Action</h2>
+                <button class="close" onclick="closeConfirmationModal()">&times;</button>
+            </div>
+            <div class="confirmation-content">
+                <div class="confirmation-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <p id="confirmationMessage">Are you sure you want to proceed?</p>
+                <div class="confirmation-actions">
+                    <button class="btn btn-secondary" onclick="closeConfirmationModal()">Cancel</button>
+                    <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="dopamine-reset.js"></script>
+    
+    <script>
+    // Custom Select Dropdown functionality
+    function initCustomSelects() {
+        var x, i, j, l, ll, selElmnt, a, b, c;
+        /* Look for any elements with the class "custom-select": */
+        x = document.getElementsByClassName("custom-select");
+        l = x.length;
+        for (i = 0; i < l; i++) {
+            selElmnt = x[i].getElementsByTagName("select")[0];
+            ll = selElmnt.length;
+            /* For each element, create a new DIV that will act as the selected item: */
+            a = document.createElement("DIV");
+            a.setAttribute("class", "select-selected");
+            a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+            x[i].appendChild(a);
+            /* For each element, create a new DIV that will contain the option list: */
+            b = document.createElement("DIV");
+            b.setAttribute("class", "select-items select-hide");
+            for (j = 1; j < ll; j++) {
+                /* For each option in the original select element,
+                create a new DIV that will act as an option item: */
+                c = document.createElement("DIV");
+                c.innerHTML = selElmnt.options[j].innerHTML;
+                c.addEventListener("click", function(e) {
+                    /* When an item is clicked, update the original select box,
+                    and the selected item: */
+                    var y, i, k, s, h, sl, yl;
+                    s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                    sl = s.length;
+                    h = this.parentNode.previousSibling;
+                    for (i = 0; i < sl; i++) {
+                        if (s.options[i].innerHTML == this.innerHTML) {
+                            s.selectedIndex = i;
+                            h.innerHTML = this.innerHTML;
+                            y = this.parentNode.getElementsByClassName("same-as-selected");
+                            yl = y.length;
+                            for (k = 0; k < yl; k++) {
+                                y[k].removeAttribute("class");
+                            }
+                            this.setAttribute("class", "same-as-selected");
+                            break;
+                        }
+                    }
+                    h.click();
+                    // Trigger change event
+                    s.dispatchEvent(new Event('change'));
+                });
+                b.appendChild(c);
+            }
+            x[i].appendChild(b);
+            a.addEventListener("click", function(e) {
+                /* When the select box is clicked, close any other select boxes,
+                and open/close the current select box: */
+                e.stopPropagation();
+                closeAllSelect(this);
+                this.nextSibling.classList.toggle("select-hide");
+                this.classList.toggle("select-arrow-active");
+            });
+        }
+    }
+
+    function closeAllSelect(elmnt) {
+        /* A function that will close all select boxes in the document,
+        except the current select box: */
+        var x, y, i, xl, yl, arrNo = [];
+        x = document.getElementsByClassName("select-items");
+        y = document.getElementsByClassName("select-selected");
+        xl = x.length;
+        yl = y.length;
+        for (i = 0; i < yl; i++) {
+            if (elmnt == y[i]) {
+                arrNo.push(i)
+            } else {
+                y[i].classList.remove("select-arrow-active");
+            }
+        }
+        for (i = 0; i < xl; i++) {
+            if (arrNo.indexOf(i)) {
+                x[i].classList.add("select-hide");
+            }
+        }
+    }
+
+    /* If the user clicks anywhere outside the select box, then close all select boxes: */
+    document.addEventListener("click", closeAllSelect);
+
+    // Initialize custom selects when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(initCustomSelects, 100);
+    });
+    </script>
+</body>
+</html>

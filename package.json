@@ -1,0 +1,37 @@
+{
+  "name": "dopamine-reset",
+  "version": "1.0.0",
+  "description": "A beautiful, modern habit tracking application inspired by Playground's design aesthetic",
+  "main": "index1.html",
+  "scripts": {
+    "start": "open index1.html",
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'No build step required for static HTML'",
+    "deploy": "echo 'Deploy to Vercel or your preferred hosting service'"
+  },
+  "keywords": [
+    "habit-tracker",
+    "productivity",
+    "wellness",
+    "self-improvement",
+    "tracking",
+    "analytics",
+    "playground-inspired",
+    "modern-ui"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR-USERNAME/dopamine-reset.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR-USERNAME/dopamine-reset/issues"
+  },
+  "homepage": "https://github.com/YOUR-USERNAME/dopamine-reset#readme",
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
